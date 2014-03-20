@@ -469,7 +469,7 @@ public class SyntaxChecker {
                 Pattern pattern2 = Pattern.compile("[^a-zA-Z0-9_-]" + executableName + ".o(\\s*|\\n)");
                 Matcher matcher2 = pattern2.matcher(makeLine);
 
-                if (!line.equals(makeLine) && (matcher.find() || matcher2.find())) {// || makeLine.contains("$(" + executableName + "-objs)"))) {
+                if (!line.equals(makeLine) && ((matcher.find() && makeLine.contains("hostprogs")) || matcher2.find())) {// || makeLine.contains("$(" + executableName + "-objs)"))) {
 
                     lookForErrors(makeLine, fileName, null, makeFileName);
                     found = true;
@@ -525,7 +525,6 @@ public class SyntaxChecker {
                 Pattern pattern = Pattern.compile("[^a-zA-Z0-9_-]" + objName + "(.o\\s*|\\n)");
                 Matcher matcher = pattern.matcher(makeLine);
                 if (!line.equals(makeLine) && (matcher.find() || makeLine.contains("$(" + objName + "-y)") || makeLine.contains("$(" + objName + "-y-y)"))) {
-
                     lookForErrors(makeLine, fileName, null, makeFileName);
                     found = true;
 
@@ -641,7 +640,6 @@ public class SyntaxChecker {
     }
 
     private boolean checkInMakeFile(String fileName, String makeFileName) throws IOException {
-
         BufferedReader inputReader = null;
         boolean found = false;
         try {
@@ -670,6 +668,7 @@ public class SyntaxChecker {
                 Matcher execMatcher = execPattern.matcher(line);
 
                 if (!line.trim().startsWith("#") && (matcher.find() || cMatcher.find())) {
+
                     lookForErrors(line, fileName, null, makeFileName);
 
                     //if found match, no need to check the rest of the file
@@ -871,6 +870,7 @@ public class SyntaxChecker {
     }
 
     private void lookForErrors(String line, String fileName, String previousConfig, String makeFileName) throws IOException {
+
         switch (checkLineFormat(line)) {
             //Base case: fileName is being used (directly or indirectly) in one
             //of the variables in the implicit rules
@@ -888,7 +888,6 @@ public class SyntaxChecker {
             //varName-y += fileName.o
             //need to check that varName is being used somewhere
             case COMPOSITE_Y_ENTRY:
-
                 checkCompositeYEntry(line, fileName, makeFileName);
                 break;
             //varName-objs + fileName.o
@@ -910,7 +909,7 @@ public class SyntaxChecker {
                 checkCompositeInKconfig(line, fileName, makeFileName);
                 break;
             default:
-                //if it is an unknown format then break for now & don't report error                
+                //if it is an unknown format then break for now & don't report error
                 break;
         }
     }
