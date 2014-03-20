@@ -4,12 +4,7 @@
  */
 package syntaxchecker;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -323,6 +318,10 @@ public class SyntaxChecker {
             }
         } else {
             String headerFile = missingFileName.replace(".c", ".h");
+            if(missingFileName.contains("spi_stmp.c")){
+               System.out.println("checking for first time, header: " + headerFile);
+
+            }
             //  System.out.println("checking header file: "+ headerFile);
             if (includedFiles.containsKey(headerFile)) {
                 Vector<String> includingFiles = includedFiles.get(headerFile);
@@ -364,7 +363,8 @@ public class SyntaxChecker {
         return directoryHasKbuild;
     }
 
-    public void printErrors() {
+    public void printErrors(PrintWriter outputPrinter) throws FileNotFoundException{
+
         if (numOfFiles != 0 && !syntaxErrors.isEmpty()) {
 
             for (SyntaxError syntaxError : syntaxErrors) {
@@ -372,7 +372,7 @@ public class SyntaxChecker {
                     // stringBuilder.append(syntaxError.getMessage()).append(NEW_LINE);
                     //System.out.println("Dir:" + directoryPath + "::" + syntaxError.getMessage());
                     //put dir path in message now
-                    System.out.println(syntaxError.getMessage());
+                    outputPrinter.println(syntaxError.getMessage());
                     count++;
                 }
             }
@@ -431,7 +431,7 @@ public class SyntaxChecker {
     }
 
     private void checkInKconfig(String configName, String fileName) {
-        configName = configName.substring(configName.indexOf("CONFIG_") + 7).trim();
+        //configName = configName.substring(configName.indexOf("CONFIG_") + 7).trim();
 
         if (configEntries.contains(configName)) {
             return;
