@@ -469,7 +469,7 @@ public class SyntaxChecker {
                 Pattern pattern2 = Pattern.compile("[^a-zA-Z0-9_-]" + executableName + ".o(\\s*|\\n)");
                 Matcher matcher2 = pattern2.matcher(makeLine);
 
-                if (!line.equals(makeLine) && ((matcher.find() && makeLine.contains("hostprogs")) || matcher2.find())) {// || makeLine.contains("$(" + executableName + "-objs)"))) {
+                if (!line.equals(makeLine) && (matcher2.find())) {// || makeLine.contains("$(" + executableName + "-objs)"))) {
 
                     lookForErrors(makeLine, fileName, null, makeFileName);
                     found = true;
@@ -892,9 +892,9 @@ public class SyntaxChecker {
                 break;
             //varName-objs + fileName.o
             //need to check that varName is being used somewhere
-            case EXECUTABLE_ENTRY:
-                checkExecutableEntry(line, fileName, makeFileName);
-                break;
+//            case EXECUTABLE_ENTRY:
+//                checkExecutableEntry(line, fileName, makeFileName);
+//                break;
             //obj-$(CONFIG_x) += fileName.o
             //need to check that CONFIG_X is in the Kconfig files
             case OBJ_CONFIG_ENTRY:
@@ -949,7 +949,7 @@ public class SyntaxChecker {
             return LineFormat.HOSTPROGS_Y_ENTRY;
         } else if (variable.matches("hostprogs-\\$\\(CONFIG_.*\\)")) {
             return LineFormat.HOSTPROGS_CONFIG_ENTRY;
-        } else if (variable.matches("obj-\\$\\(CONFIG_.*\\)")) {
+        } else if (variable.matches("obj-\\$\\(CONFIG_.*\\)") || variable.matches("objs-\\$\\(CONFIG_.*\\)")) {
             return LineFormat.OBJ_CONFIG_ENTRY;
         } else if (variable.matches("[a-zA-Z0-9_]+-y")) {
             return LineFormat.COMPOSITE_Y_ENTRY;

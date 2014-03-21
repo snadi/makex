@@ -22,6 +22,12 @@ public class Main {
 
 
     public static void checkDirectories(String dirPath, Vector<String> configEntries, PrintWriter outputPrinter, int level) {
+
+        //do not analyze the staging directory to avoid skewing results, and to be consistent with later CSMR'12
+        //and JSEP work
+        if(dirPath.contains("staging"))
+            return;
+
         dirCount++;
         try {
 
